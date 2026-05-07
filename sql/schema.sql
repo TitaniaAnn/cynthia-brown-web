@@ -128,9 +128,9 @@ INSERT INTO settings (`key`, `value`) VALUES
   ('bio',      'A passionate developer who loves building great software.')
 ON DUPLICATE KEY UPDATE `key` = `key`;
 
--- Seed whitelisted admin (replace with your actual email)
-INSERT IGNORE INTO admins (email, name, provider)
-VALUES ('titaniaandroid@gmail.com', 'Admin', 'google');
+-- Admin rows are created on first OAuth login via upsert_admin() — no
+-- seed row is needed here. The whitelist of allowed emails lives in
+-- ADMIN_EMAILS in .env and is the actual gate for is_allowed_email().
 
 -- Sample projects
 INSERT INTO projects (title, description, language, tags, github_url, demo_url, status, sort_order) VALUES
