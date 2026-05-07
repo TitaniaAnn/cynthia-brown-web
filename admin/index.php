@@ -1069,7 +1069,7 @@ async function importProjects(input) {
   }
   const count = Array.isArray(parsed) ? parsed.length : (parsed && typeof parsed === 'object' ? 1 : 0);
   if (!count) { toast('No projects in file', true); input.value = ''; return; }
-  if (!confirm(`Import ${count} project${count === 1 ? '' : 's'}? Existing titles will be skipped.`)) {
+  if (!confirm(`Import ${count} project${count === 1 ? '' : 's'}? Existing titles will be updated when their data has changed.`)) {
     input.value = '';
     return;
   }
@@ -1080,6 +1080,7 @@ async function importProjects(input) {
       body: JSON.stringify(parsed),
     });
     const parts = [`Created ${res.created}`];
+    if (res.updated) parts.push(`updated ${res.updated}`);
     if (res.skipped) parts.push(`skipped ${res.skipped}`);
     if (res.errors && res.errors.length) parts.push(`${res.errors.length} error${res.errors.length === 1 ? '' : 's'}`);
     toast(parts.join(' · '), Boolean(res.errors && res.errors.length));

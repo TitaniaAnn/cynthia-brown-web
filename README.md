@@ -99,7 +99,7 @@ Uncomment the HTTPS redirect block in `.htaccess` once your SSL certificate is a
 
 | Panel | What it does |
 |---|---|
-| Projects | Title, descriptions, language, GitHub/demo links, tags, year, status. Drag to reorder. Per-project image gallery with star-to-mark-as-summary. Import / export as JSON. |
+| Projects | Title, descriptions, language, GitHub/demo links, tags, year, status. Drag to reorder. Per-project image gallery with star-to-mark-as-summary. Import / export as JSON — re-importing an existing title updates it in place when its data has changed. |
 | Writing | Markdown posts with cover image, tags, draft/publish toggle, scheduled `published_at`, link-to-projects, live preview pane. RSS feed regenerates on save. |
 | Skills | Grouped skill labels for the About section. |
 | Settings | Name, role, bio, email, GitHub, LinkedIn, location, tagline, ticker text. |
