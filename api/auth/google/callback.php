@@ -61,6 +61,10 @@ if (!is_allowed_email($email)) {
 
 $adminId = upsert_admin($email, $name, $avatar, 'google');
 $session = create_session($adminId);
+// Rotate the PHP session ID on privilege gain to defeat session fixation —
+// any pre-login PHPSESSID an attacker may have planted in the browser is
+// invalidated server-side here.
+session_regenerate_id(true);
 $_SESSION['admin_token'] = $session['token'];
 audit_log('login.success', $adminId, 'provider=google');
 

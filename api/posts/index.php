@@ -65,7 +65,7 @@ if ($method === 'POST') {
         trim((string)$b['title']),
         nullable_string($b['excerpt'] ?? ''),
         (string)$b['body_markdown'],
-        clean_url($b['cover_image'] ?? ''),
+        clean_image_src($b['cover_image'] ?? ''),
         normalize_tags($b['tags'] ?? ''),
         ($b['is_published'] ?? false) ? 1 : 0,
         $publishedAt,
@@ -108,7 +108,7 @@ if ($method === 'PUT') {
         $fields[] = '`body_markdown` = ?'; $params[] = $body;
     }
     if (array_key_exists('cover_image', $b)) {
-        $newCover = clean_url($b['cover_image']);
+        $newCover = clean_image_src($b['cover_image']);
         // If the old cover was an uploaded file and it's being replaced or
         // cleared, unlink it so the upload dir doesn't accumulate orphans.
         $oldCover = (string)($current['cover_image'] ?? '');

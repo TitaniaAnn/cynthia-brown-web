@@ -63,3 +63,38 @@ T::group('clean_url', function () {
     T::eq('HTTPS://example.com', clean_url('HTTPS://example.com'),
         'preserves caller casing while accepting uppercase scheme');
 });
+
+T::group('clean_image_src', function () {
+    // Empty / null / oversized
+    T::eq(null, clean_image_src(null),                     'null → null');
+    T::eq(null, clean_image_src(''),                       'empty → null');
+    T::eq(null, clean_image_src('   '),                    'whitespace → null');
+    T::eq(null, clean_image_src(str_repeat('a', 600)),     'rejects > 500 chars');
+
+    // Root-relative upload paths — what api/uploads/index.php returns. This
+    // is the bug-fix path: clean_url() previously rejected these because
+    // FILTER_VALIDATE_URL requires a scheme, silently NULLing cover_image
+    // on every post save.
+    T::eq('/uploads/projects/abc.png', clean_image_src('/uploads/projects/abc.png'),
+        'accepts /uploads/ root-relative path');
+    T::eq('/uploads/projects/sub/dir/x.webp', clean_image_src('/uploads/projects/sub/dir/x.webp'),
+        'accepts nested upload path');
+    T::eq('/uploads/projects/abc-123_v2.png', clean_image_src('  /uploads/projects/abc-123_v2.png  '),
+        'trims and accepts hyphens/underscores/digits');
+
+    // Reject traversal and weird chars even under /uploads/.
+    T::eq(null, clean_image_src('/uploads/../etc/passwd'),    'rejects ../ traversal');
+    T::eq(null, clean_image_src('/uploads/projects/../../x'), 'rejects nested ../');
+    T::eq(null, clean_image_src('/uploads/projects/x;y.png'), 'rejects forbidden chars');
+    T::eq(null, clean_image_src('/uploads/projects/x.png?q=1'), 'rejects query string');
+
+    // Other root-relative paths fall through to the URL branch and fail.
+    T::eq(null, clean_image_src('/etc/passwd'),               'rejects non-/uploads/ path');
+    T::eq(null, clean_image_src('//proto-relative.example/x'), 'rejects protocol-relative URL');
+
+    // External http(s) URLs still work — admin pasting an external image link.
+    T::eq('https://cdn.example.com/x.png', clean_image_src('https://cdn.example.com/x.png'),
+        'accepts external https');
+    T::eq(null, clean_image_src('javascript:alert(1)'),       'rejects javascript: scheme');
+    T::eq(null, clean_image_src('ftp://x/y.png'),             'rejects ftp: scheme');
+});

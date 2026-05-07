@@ -54,8 +54,7 @@ if ($method === 'POST') {
     $tags       = implode(',', csv_to_array(is_array($b['tags'] ?? null) ? implode(',', (array)$b['tags']) : ($b['tags'] ?? '')));
     $github     = clean_url($b['github_url'] ?? '');
     $demo       = clean_url($b['demo_url']   ?? '');
-    $summaryImg = trim((string)($b['summary_image'] ?? ''));
-    $summaryImg = $summaryImg !== '' ? $summaryImg : null;
+    $summaryImg = clean_image_src($b['summary_image'] ?? '');
     $status     = in_array($b['status'] ?? '', ['active','wip','archived']) ? $b['status'] : 'active';
     $sort       = (int)($b['sort_order'] ?? 0);
     $year       = !empty($b['year']) ? (int)$b['year'] : null;
@@ -123,9 +122,8 @@ if ($method === 'PUT') {
         $params[] = implode(',', csv_to_array($tags));
     }
     if (array_key_exists('summary_image', $b)) {
-        $sum = trim((string)$b['summary_image']);
         $fields[] = '`summary_image` = ?';
-        $params[] = $sum !== '' ? $sum : null;
+        $params[] = clean_image_src($b['summary_image']);
     }
 
     if ($fields) {

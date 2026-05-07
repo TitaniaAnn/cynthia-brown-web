@@ -52,6 +52,32 @@ function clean_url(?string $url): ?string {
     return $url;
 }
 
+/**
+ * Validate an image source — used for cover_image / summary_image fields.
+ * Accepts EITHER:
+ *   - a root-relative path under /uploads/ (what api/uploads/ returns), OR
+ *   - an http(s) URL (admin pasting an external image link).
+ *
+ * clean_url() alone breaks the upload flow because FILTER_VALIDATE_URL
+ * requires a scheme — "/uploads/projects/abc.png" gets rejected and the
+ * field is silently stored as NULL. Don't use clean_url() for these.
+ */
+function clean_image_src(?string $src): ?string {
+    if ($src === null) return null;
+    $src = trim($src);
+    if ($src === '') return null;
+    if (strlen($src) > 500) return null;
+
+    if (str_starts_with($src, '/uploads/')) {
+        // Reject any traversal attempt or non-filename chars. The path is
+        // re-resolved against disk by delete_local_upload() too, but a
+        // tight regex here keeps obviously-bad values out of the DB.
+        if (str_contains($src, '..')) return null;
+        return preg_match('#^/uploads/[A-Za-z0-9._/-]+$#', $src) ? $src : null;
+    }
+    return clean_url($src);
+}
+
 /** True iff the named column exists in the named table on the active DB. */
 function column_exists(string $table, string $column): bool {
     $stmt = db()->prepare(

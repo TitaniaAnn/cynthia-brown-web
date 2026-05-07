@@ -68,8 +68,7 @@ foreach ($items as $i => $p) {
     $tags      = implode(',', csv_to_array($tagsCsv));
     $github    = clean_url($p['github_url'] ?? '');
     $demo      = clean_url($p['demo_url']   ?? '');
-    $summary   = trim((string)($p['summary_image'] ?? ''));
-    $summary   = $summary !== '' ? $summary : null;
+    $summary   = clean_image_src($p['summary_image'] ?? '');
     $status    = in_array($p['status'] ?? '', ['active','wip','archived'], true) ? $p['status'] : 'active';
     $sort      = (int)($p['sort_order'] ?? 0);
     $year      = !empty($p['year']) ? (int)$p['year'] : null;

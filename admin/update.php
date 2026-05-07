@@ -269,7 +269,10 @@ $total         = count($migrations);
   </div>
   <div class="tb-right">
     <a href="/admin/" class="btn-sm">← Dashboard</a>
-    <a href="/api/auth/logout.php" class="btn-sm">Logout</a>
+    <form action="/api/auth/logout.php" method="post" style="display:inline">
+      <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($admin['csrf_token'] ?? '') ?>">
+      <button type="submit" class="btn-sm">Logout</button>
+    </form>
   </div>
 </div>
 
